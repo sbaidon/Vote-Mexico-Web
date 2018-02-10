@@ -5,20 +5,18 @@
 </template>
 
 <script>
-import AuthService from '../auth';
+import auth from '../auth';
 
 export default {
   name: 'callback',
   data() {
     return {
-      auth: new AuthService()
+      auth
     };
   },
-  mounted() {
-    this.auth.handleAuthentication();
-    this.auth.authNotifier.on('authChange', ({ authenticated }) => {
-      if (authenticated) this.$router.push('/');
-    });
+  async mounted() {
+    const { authenticated } = await this.auth.handleAuthentication();
+    if (authenticated) this.$router.push('/');
   }
 };
 </script>

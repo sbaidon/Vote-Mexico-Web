@@ -35,10 +35,7 @@
 </template>
 
 <script>
-import AuthService from '../auth';
-
-const auth = new AuthService();
-const { login, logout, authNotifier } = auth;
+import auth from '../auth';
 
 export default {
   name: 'app',
@@ -47,14 +44,13 @@ export default {
       auth
     };
   },
-  created() {
-    authNotifier.on('authChange', ({ authenticated }) => {
-      if (authenticated) this.$router.push('/home');
-    });
-  },
   methods: {
-    login,
-    logout
+    login() {
+      auth.login();
+    },
+    logout() {
+      auth.logout();
+    }
   }
 };
 </script>
