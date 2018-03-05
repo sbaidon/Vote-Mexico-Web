@@ -16,7 +16,7 @@ export default {
   },
   async mounted() {
     const { authenticated } = await this.auth.handleAuthentication();
-    if (authenticated) this.$router.push('/');
+    if (authenticated) this.$router.push('/home');
   }
 };
 </script>

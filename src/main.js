@@ -8,6 +8,8 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 
+import 'tachyons/css/tachyons.min.css';
+
 Vue.config.productionTip = false;
 Vue.use(VueApollo);
 

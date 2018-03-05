@@ -10,6 +10,17 @@ export default {
     scope: 'openid profile'
   }),
 
+  requireAuth(to, from, next) {
+    if (!this.isAuthenticated()) {
+      next({
+        path: '/',
+        query: { redirect: to.fullPath }
+      });
+      return;
+    }
+    next();
+  },
+
   login() {
     this.auth0.authorize();
   },
