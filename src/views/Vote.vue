@@ -1,19 +1,19 @@
 <template>
   <section id="current-election">
     <div class="candidates">
-      <candidate-card @candidate-selected="pushCandidate" v-for="(candidate, index) in shuffledCandidates" :candidate="candidate" :key="index">
-      </candidate-card>
+      <candidate @candidate-selected="pushCandidate" v-for="(candidate, index) in shuffledCandidates" :candidate="candidate" :key="index">
+      </candidate>
       <button @click.prevent="castVote">Cast Vote</button>
     </div>
   </section>
 </template>
 <script>
 import gql from 'graphql-tag';
-import CandidateCard from '../components/CandidateCard.vue';
+import Candidate from '../components/Candidate.vue';
 
 export default {
   name: 'vote',
-  components: { CandidateCard },
+  components: { Candidate },
   props: {
     id: {
       type: String

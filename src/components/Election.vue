@@ -1,18 +1,22 @@
 <template>
-    <div class="election-card">
+    <div class="election">
         <p>Possible votes: {{ election.possibleVotes }}</p>
         <p>Started on: {{ startDate }}</p>
         <p>Will finish on: {{ finishDate }}</p>
-        <div class="vote" @click="goToVote">Vote</div>
+        <div v-if="!hasVoted" class="vote" @click="goToVote">Vote</div>
+        <div v-else class="results" @click="goToVotes">See my votes</div>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'election-card',
+  name: 'election',
   props: {
     election: {
       type: Object
+    },
+    hasVoted: {
+      type: Boolean
     }
   },
   data() {
@@ -28,8 +32,10 @@ export default {
   },
   methods: {
     goToVote() {
-      const { id } = this.election;
       this.$router.push({ name: 'vote' });
+    },
+    goToVotes() {
+      this.$router.push({ name: 'votes' });
     }
   }
 };
@@ -37,7 +43,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.election-card {
+.election {
   border: 1px solid salmon;
   padding: 1rem;
   display: flex;

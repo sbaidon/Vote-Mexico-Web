@@ -5,6 +5,8 @@ import About from './views/About.vue';
 import Login from './views/Login.vue';
 import Elections from './views/Elections.vue';
 import Vote from './views/Vote.vue';
+import Votes from './views/Votes.vue';
+import Results from './views/Results.vue';
 import Callback from './views/Callback.vue';
 import Admin from './views/Admin.vue';
 import Root from './views/Root.vue';
@@ -75,6 +77,22 @@ export default new Router({
       component: Vote,
       meta: {
         active: false
+      }
+    },
+    {
+      path: '/votes',
+      name: 'votes',
+      component: Votes,
+      meta: {
+        active: false
+      }
+    },
+    {
+      path: '/results',
+      name: 'results',
+      component: Results,
+      meta: {
+        active: true
       }
     }
   ]

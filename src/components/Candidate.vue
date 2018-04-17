@@ -1,6 +1,6 @@
 <template>
-    <div class="candidate-card">
-        <p>Name {{ candidate.name }}</p>
+    <div class="candidate">
+        <p>{{ candidate.name }}</p>
         <img :src="candidate.image" />
         <div class="vote" @click="select">Select</div>
     </div>
@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: 'candidate-card',
+  name: 'candidate',
   props: {
     candidate: {
       type: Object
@@ -27,7 +27,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.candidate-card {
+.candidate {
   border: 1px solid salmon;
   padding: 1rem;
   display: grid;
@@ -35,7 +35,7 @@ export default {
   align-content: center;
 }
 
-.candidate-card img {
+.candidate img {
   height: 500px;
 }
 
