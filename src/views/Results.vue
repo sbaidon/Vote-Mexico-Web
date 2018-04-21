@@ -18,6 +18,7 @@ export default {
       step: 0,
       history: [],
       loosers: [],
+      winner: null,
     };
   },
   watch: {
@@ -25,15 +26,10 @@ export default {
       this.votes = [...value];
     },
   },
-  mounted() {
-    // We should check if there is any looser already, this means they had 0 votes since the start
-  },
   components: { Candidate },
   computed: {
     totalVotes() {
-      return this.votes
-        .map(vote => vote.candidates)
-        .reduce((prev, curr) => [...prev, ...curr]).length;
+      return this.votes.length;
     },
     results() {
       const groupedByCandidate = this.votes.reduce((_, votes) => {
@@ -77,35 +73,43 @@ export default {
       return this.groupedByCandidate[candidate];
     },
     nextStep() {
+      if (this.winner) return;
+
       this.history.push({ votes: [...this.votes], results: [...this.results] });
       // Get winner if there is any
-      const winner = this.getWinner(this.step);
-      if (winner.length) {
-        console.log('winner', winner);
+      const [winner] = this.getWinner(this.step);
+      if (winner) {
+        this.winner = winner;
+        console.log('winner', this.winner);
         return;
       }
       // Get the looser
-      const looser = this.getLooser(this.step);
-      this.loosers.push(looser);
+      const looser = this.getLooser();
+      this.loosers.push(looser.id);
       // Get next choice votes from looser
-      const lostVotes = this.retrieveVotes(looser, this.step);
+      const lostVotes = this.retrieveVotes(looser);
       const newVotes = this.getFollowingVotes(lostVotes);
-
-      console.log('lost votes', lostVotes);
-
-      console.log('new votes', newVotes);
-
-      this.votes = this.votes.map(votes => {
+      this.votes = this.calculateVotes(this.votes, newVotes);
+    },
+    calculateVotes(prevVotes, newVotes) {
+      return prevVotes.map(votes => {
         const newVote = newVotes.find(vote => vote.id === votes.id);
         if (!newVote) return votes;
         return newVote;
       });
-
-      this.step += 1;
     },
     getFollowingVotes(lostVotes) {
+      const loosers = [...this.loosers];
       return lostVotes.map(votes => {
-        const [lost, ...candidates] = votes.candidates;
+        const copy = [...votes.candidates];
+        let [next] = copy;
+        /* Remaining votes could go to a candidate who lost already */
+        while (loosers.includes(next.id)) {
+          copy.shift();
+          [next] = copy;
+          if (!next) break;
+        }
+        const candidates = [...copy];
         const newVotes = { ...votes, candidates };
         return newVotes;
       });
@@ -120,27 +124,25 @@ export default {
     },
     getLooser() {
       return this.results.reduce((prev, current) => {
+        if (this.loosers.includes(prev.candidate.id)) return current;
+        if (this.loosers.includes(current.candidate.id)) return prev;
+
         const prevVotes = this.getVotes(prev.votes);
         const currVotes = this.getVotes(current.votes);
-        // Do not take into account candidates with 0 Votes
-        if (prevVotes === 0) return current;
-        if (currVotes === 0) return prev;
         // Get the lowest voted candidate
         return prevVotes < currVotes ? prev : current;
       }).candidate;
     },
     retrieveVotes(candidate) {
+      if (!candidate) return [];
       return this.votes.filter(votes => {
-        return votes.candidates[0].id === candidate.id;
+        return (
+          votes.candidates.length && votes.candidates[0].id === candidate.id
+        );
       });
     },
     getVotes(votes) {
       return votes.filter(({ arrayIndex }) => arrayIndex === 0).length;
-    },
-    getCandidateVotes(id, choice) {
-      return this.results.filter(
-        result => result.candidate.id === id && result.arrayIndex === choice,
-      );
     },
     isMajority(totalVotes, votes) {
       return votes >= totalVotes / 2;
